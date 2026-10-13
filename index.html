@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Paragon - Bloons TD 6</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --primary-color: #ff9900;
+            --text-color: #c9d1d9;
+            --text-heading: #ffffff;
+            --accent-blue: #58a6ff;
+            --accent-green: #2ea043;
+            --accent-red: #da3633;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: bold;
+            color: var(--text-heading);
+            font-size: 0.95rem;
+        }
+
+        select, input[type="number"], input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #0d1117;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .quick-degrees {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .btn-degree {
+            background-color: #21262d;
+            border: 1px solid var(--border-color);
+            color: var(--text-heading);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .btn-degree:hover {
+            background-color: var(--primary-color);
+            color: #000;
+        }
+
+        .section-title {
+            color: var(--accent-blue);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px;
+            margin: 20px 0 12px 0;
+            font-size: 1.1rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #0d1117;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-group input {
+            width: auto;
+            transform: scale(1.2);
+        }
+
+        .results-box {
+            background-color: #0d1117;
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .degree-badge {
+            background-color: var(--primary-color);
+            color: #000;
+            font-weight: bold;
+            font-size: 1.4rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px dashed #21262d;
+            font-size: 0.95rem;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .val-highlight {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calculadora de Paragon - Bloons TD 6</h1>
+
+    <div class="grid-2">
+        <div class="form-group">
+            <label for="paragon-select">Selecione a Paragon:</label>
+            <select id="paragon-select" onchange="calcular()">
+                <option value="dart">Macaco Dardo ($150.000)</option>
+                <option value="boomer">Macaco Bumerangue ($375.000)</option>
+                <option value="tack">Cospe Tachinha ($200.000)</option>
+                <option value="ice">Macaco Gelo ($300.000)</option>
+                <option value="sniper">Macaco Atirador ($800.000)</option>
+                <option value="sub">Macaco Submarino ($400.000)</option>
+                <option value="buccaneer">Macaco Bucaneiro ($550.000)</option>
+                <option value="ace">Macaco Ás ($900.000)</option>
+                <option value="ninja">Macaco Ninja ($500.000)</option>
+                <option value="druid">Druida ($475.000)</option>
+                <option value="spike">Usina de Espinhos ($750.000)</option>
+                <option value="engineer">Macaco Engenheiro ($600.000)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="difficulty-select">Dificuldade:</label>
+            <select id="difficulty-select" onchange="calcular()">
+                <option value="0.85">Fácil (85%)</option>
+                <option value="1.0" selected>Médio (100%)</option>
+                <option value="1.08">Difícil (108%)</option>
+                <option value="1.20">Inestourável (120%)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Grau Desejado (Atalho Rápido):</label>
+        <div class="quick-degrees">
+            <button class="btn-degree" onclick="setDegree(20)">Grau 20</button>
+            <button class="btn-degree" onclick="setDegree(30)">Grau 30</button>
+            <button class="btn-degree" onclick="setDegree(40)">Grau 40</button>
+            <button class="btn-degree" onclick="setDegree(50)">Grau 50</button>
+            <button class="btn-degree" onclick="setDegree(60)">Grau 60</button>
+            <button class="btn-degree" onclick="setDegree(65)">Grau 65</button>
+            <button class="btn-degree" onclick="setDegree(80)">Grau 80</button>
+            <button class="btn-degree" onclick="setDegree(90)">Grau 90</button>
+            <button class="btn-degree" onclick="setDegree(100)">Grau 100</button>
+        </div>
+    </div>
+
+    <div class="section-title">Parâmetros de Poder da Paragon</div>
+
+    <div class="grid-2">
+        <div class="form-group">
+            <label for="pops-input">Estouros (Pops) - Máx 22.5M (125k pts):</label>
+            <input type="number" id="pops-input" value="0" min="0" max="22500000" oninput="calcular()">
+        </div>
+
+        <div class="form-group" id="income-group">
+            <label for="income-input">Dinheiro Gerado ($) - Máx 5.625M (125k pts):</label>
+            <input type="number" id="income-input" value="0" min="0" max="5625000" oninput="calcular()">
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="form-group">
+            <label for="totems-input">Totens do Geraldo (Máx 100 = 200k pts):</label>
+            <input type="number" id="totems-input" value="0" min="0" max="100" oninput="calcular()">
+        </div>
+
+        <div class="form-group" id="crossbow-group">
+            <label>Recursos Especiais:</label>
+            <div class="checkbox-group">
+                <input type="checkbox" id="crossbow-check" onchange="calcular()">
+                <label for="crossbow-check">Possui Segundo Mestre da Besta?</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-top: 15px;">
+        <label for="slider-slider">Investimento da Barra na Criação ($): <span id="slider-val" class="val-highlight">$0</span></label>
+        <input type="range" id="slider-slider" min="0" max="100" value="0" oninput="calcular()">
+    </div>
+
+    <div class="results-box">
+        <div class="results-header">
+            <h3>Resultado Calculado</h3>
+            <div class="degree-badge" id="res-degree">Grau 1</div>
+        </div>
+
+        <div class="stat-row">
+            <span>Poder Total Obtido:</span>
+            <span id="res-total-power" class="val-highlight">0 pts</span>
+        </div>
+        <div class="stat-row">
+            <span>Poder de Estouros/Renda (Teto 125k):</span>
+            <span id="res-pop-power">0 pts</span>
+        </div>
+        <div class="stat-row">
+            <span>Poder de Investimento Barra:</span>
+            <span id="res-slider-power">0 pts</span>
+        </div>
+        <div class="stat-row">
+            <span>Poder de Totens do Geraldo:</span>
+            <span id="res-totem-power">0 pts</span>
+        </div>
+        <div class="stat-row">
+            <span>Investimento Necessário em Dinheiro:</span>
+            <span id="res-cash-needed" class="val-highlight">$0</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Mapeamento exato de Graus e Poderes
+    const degreePowerTable = [
+        {degree: 1, power: 0}, {degree: 2, power: 180}, {degree: 3, power: 400},
+        {degree: 4, power: 660}, {degree: 5, power: 960}, {degree: 6, power: 1300},
+        {degree: 7, power: 1680}, {degree: 8, power: 2100}, {degree: 9, power: 2560},
+        {degree: 10, power: 3060}, {degree: 11, power: 3600}, {degree: 12, power: 4180},
+        {degree: 13, power: 4800}, {degree: 14, power: 5460}, {degree: 15, power: 6160},
+        {degree: 16, power: 6900}, {degree: 17, power: 7680}, {degree: 18, power: 8500},
+        {degree: 19, power: 9360}, {degree: 20, power: 12000}, {degree: 30, power: 20000},
+        {degree: 40, power: 31000}, {degree: 50, power: 45000}, {degree: 60, power: 63000},
+        {degree: 65, power: 72000}, {degree: 80, power: 117000}, {degree: 90, power: 154000},
+        {degree: 100, power: 200000}
+    ];
+
+    const paragonBasePrices = {
+        dart: 150000, boomer: 375000, tack: 200000, ice: 300000,
+        sniper: 800000, sub: 400000, buccaneer: 550000, ace: 900000,
+        ninja: 500000, druid: 475000, spike: 750000, engineer: 600000
+    };
+
+    const hasIncomeGen = ['buccaneer', 'druid'];
+
+    function getPowerForDegree(deg) {
+        for (let i = degreePowerTable.length - 1; i >= 0; i--) {
+            if (deg >= degreePowerTable[i].degree) return degreePowerTable[i].power;
+        }
+        return 0;
+    }
+
+    function getDegreeFromPower(pw) {
+        let deg = 1;
+        for (let i = 0; i < degreePowerTable.length; i++) {
+            if (pw >= degreePowerTable[i].power) {
+                deg = degreePowerTable[i].degree;
+            } else {
+                break;
+            }
+        }
+        return deg;
+    }
+
+    function setDegree(deg) {
+        const targetPw = getPowerForDegree(deg);
+        // Preenche automaticamente o investimento da barra ou estouros se necessário
+        if (targetPw <= 80000) {
+            const perc = (targetPw / 80000) * 100;
+            document.getElementById('slider-slider').value = Math.min(100, perc);
+            document.getElementById('pops-input').value = 0;
+            document.getElementById('totems-input').value = 0;
+        } else {
+            document.getElementById('slider-slider').value = 100;
+            const remaining = targetPw - 80000;
+            const neededPops = Math.min(22500000, remaining * 180);
+            document.getElementById('pops-input').value = Math.round(neededPops);
+            
+            if (remaining > 125000) {
+                const totemRem = remaining - 125000;
+                document.getElementById('totems-input').value = Math.min(100, Math.ceil(totemRem / 2000));
+            } else {
+                document.getElementById('totems-input').value = 0;
+            }
+        }
+        calcular();
+    }
+
+    function calcular() {
+        const paragon = document.getElementById('paragon-select').value;
+        const diffMult = parseFloat(document.getElementById('difficulty-select').value);
+
+        // Ocultar/Exibir opções específicas
+        if (paragon === 'dart') {
+            document.getElementById('crossbow-group').style.display = 'block';
+        } else {
+            document.getElementById('crossbow-group').style.display = 'none';
+            document.getElementById('crossbow-check').checked = false;
+        }
+
+        if (hasIncomeGen.includes(paragon)) {
+            document.getElementById('income-group').style.display = 'flex';
+        } else {
+            document.getElementById('income-group').style.display = 'none';
+            document.getElementById('income-input').value = 0;
+        }
+
+        // Leitura dos inputs
+        const pops = parseFloat(document.getElementById('pops-input').value) || 0;
+        const income = parseFloat(document.getElementById('income-input').value) || 0;
+        const totems = parseInt(document.getElementById('totems-input').value) || 0;
+        const sliderVal = parseFloat(document.getElementById('slider-slider').value) || 0;
+        const hasExtraCrossbow = document.getElementById('crossbow-check').checked;
+
+        // Cálculos de Poder
+        const popPts = Math.min(125000, (pops / 180) + (income / 45));
+        const totemPts = Math.min(100, totems) * 2000;
+        const sliderPts = (sliderVal / 100) * 80000;
+        const crossbowPts = hasExtraCrossbow ? 10000 : 0; // Bônus de Tier 5 adicional
+
+        const totalPower = popPts + totemPts + sliderPts + crossbowPts;
+        const currentDegree = getDegreeFromPower(totalPower);
+
+        // Preço do investimento
+        const basePrice = paragonBasePrices[paragon] * diffMult;
+        const investedCash = (sliderVal / 100) * (basePrice * 4.2); // Multiplicador proporcional
+
+        // Atualizar UI
+        document.getElementById('slider-val').innerText = `$${Math.round(investedCash).toLocaleString()}`;
+        document.getElementById('res-degree').innerText = `Grau ${currentDegree}`;
+        document.getElementById('res-total-power').innerText = `${Math.round(totalPower).toLocaleString()} pts`;
+        document.getElementById('res-pop-power').innerText = `${Math.round(popPts).toLocaleString()} / 125.000 pts`;
+        document.getElementById('res-slider-power').innerText = `${Math.round(sliderPts).toLocaleString()} / 80.000 pts`;
+        document.getElementById('res-totem-power').innerText = `${totemPts.toLocaleString()} pts`;
+        document.getElementById('res-cash-needed').innerText = `$${Math.round(investedCash + basePrice).toLocaleString()}`;
+    }
+
+    // Inicializar
+    calcular();
+</script>
+</body>
+</html>
